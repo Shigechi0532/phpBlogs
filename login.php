@@ -4,7 +4,7 @@
     // エラーメッセージ
     $err = null;
 
-    if(isset($_POST["name"]) && isset( $_POST["password"])){
+    if(isset($_POST['name']) && isset( $_POST['password'])){
         $db = new connect();
 
         // 実行したいSQL
