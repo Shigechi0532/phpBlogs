@@ -1,7 +1,36 @@
 <?php
-    session_start();
-    if(!isset($_SESSION["id"])){
-        header('Location: login.php');
+    include 'lib/secure.php';
+    include 'lib/connect.php';
+
+    $title = ""; //タイトル
+    $body = ""; //本文
+    $title_alert = ""; //タイトルのエラー文
+    $body_alert = ""; //本文のエラー文
+
+    if(!empty($_POST['title']) && !empty($_POST['body']))
+    {
+        // titleとbodyがPOSTメソッドで送信されたとき
+        $title = $_POST['title'];
+        $body = $_POST['body'];
+        $db = new connect();
+        $sql = "INSERT INTO articles (title, body, created_at, updated_at)
+                VALUES (:title, :body, NOW(), NOW())";
+        $result = $db->query($sql, array(':title' => $title, ':body' => $body));
+        header('Location: backend.php');
+    }else if(!empty($_POST)){
+        // POSTメソッドで送信されたが、titleかbodyが足りなとき
+        // 存在する法は変数へ、ない場合空文字にしてフォームのvalueに設定する
+        if(!empty($_POST['title'])){
+            $title = $_POST['title'];
+        }else{
+            $title_alert = "タイトルを入力してください。";
+        }
+
+        if(!empty($_POST['body'])){
+            $body = $_POST['body'];
+        }else{
+            $body_alert = "本文を入力してください。";
+        }
     }
 ?>
 
@@ -39,17 +68,7 @@
     <link rel="stylesheet" href="./css/phpBlogs.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-red fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/phpBlogs/backend.php">My Blog Backend</a>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item"><a class="nav-link" href="#">記事を書く</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php">ログアウト</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php include('lib/nav.php') ?>
 
     <main class="container">
         <div class="row">
@@ -60,11 +79,13 @@
                 <form action="post.php" method="post">
                     <div class="mb-3">
                         <label class="form-label">タイトル</label>
-                        <input type="text" name="title" class="form-control">
+                        <?php echo !empty($title_alert)? '<div class="alert alert-danger">'.$title_alert.'</div>' : '' ?>
+                        <input type="text" name="title" value="<?php echo $title; ?>" class="form-control">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">本文</label>
-                        <textarea name="body" class="form-control" rows="10"></textarea>
+                        <?php echo !empty($body_alert)? '<div class="alert alert-danger">' .$body_alert.'</div>' : "" ?>
+                        <textarea name="body" class="form-control" rows="10"><?php echo $body; ?></textarea>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">投稿する</button>
