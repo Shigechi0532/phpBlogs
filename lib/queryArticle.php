@@ -13,6 +13,15 @@
         public function save(){
             if($this->article->getId()){
                 // IDがあるときは上書き
+                $id = $this->article->getId();
+                $title = $this->article->getTitle();
+                $body = $this->article->getBody();
+                $stmt = $this->dbh->prepare("UPDATE articles
+                            SET title=:title, body=:body, updated_at=NOW() WHERE id=:id");
+                $stmt->bindParam(":title", $title, PDO::PARAM_STR);
+                $stmt->bindParam(":body", $body, PDO::PARAM_STR);
+                $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+                $stmt->execute();
             }else{
                 // IDがなければ新規作成
                 $title = $this->article->getTitle();
