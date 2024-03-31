@@ -35,6 +35,11 @@
             // 記事データが存在していれば、タイトルと本文を変更して上書き保存
             $article->setTitle($title);
             $article->setBody($body);
+
+            if(isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])){
+                $article->setFile($_FILES['image']);
+            }
+
             $article->save();
         }
         header('Location: backend.php');
@@ -118,8 +123,13 @@
                         <?php echo !empty($body_alert)? '<div class="alert alert-danger">'.$body_alert.'</div>': '' ?>
                         <textarea name="body" class="form-control" rows="10"><?php echo $body; ?></textarea>
                     </div>
+                    <?php if($article->getFilename()): ?>
                     <div class="mb-3">
-                        <label class="form-label">画僧</label>
+                        <img src="./album/thumbs-<?php echo $article->getFilename() ?>" >
+                    </div>
+                    <?php endif ?>
+                    <div class="mb-3">
+                        <label class="form-label">画像</label>
                         <input type="file" name="image" class="form-control">
                     </div>
                     <div class="mb-3">

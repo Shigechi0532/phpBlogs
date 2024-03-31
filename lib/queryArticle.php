@@ -75,15 +75,29 @@
             // bindParam用
             $title = $this->article->getTitle();
             $body = $this->article->getBody();
-            $filename = null;
+            $filename = $this->article->getFilename();
 
             if($this->article->getId()){
                 // IDがあるときは上書き
                 $id = $this->article->getId();
+
+                // 新しいファイルがアップロードされたとき
+                if($file = $this->article->getFile()){
+                    // 新しいファイルが既にある場合、古いファイルを削除する
+                    if($this->article->getFilename()){
+                        unlink(__DIR__.'/../album/thumbs-'.$this->article->getFilename());
+                        unlink(__DIR__.'/../album/'.$this->article->getFilename());
+                    }
+                    // 新しいファイルのアップロード
+                    $this->article->setFilename($this->saveFile($file['tmp_name']));
+                    $filename = $this->article->getFilename();
+                }
+                // $stmtを修正
                 $stmt = $this->dbh->prepare("UPDATE articles
                             SET title=:title, body=:body, updated_at=NOW() WHERE id=:id");
                 $stmt->bindParam(":title", $title, PDO::PARAM_STR);
                 $stmt->bindParam(":body", $body, PDO::PARAM_STR);
+                $stmt->bindParam(":filename", $filename, PDO::PARAM_STR);
                 $stmt->bindParam(":id", $id, PDO::PARAM_INT);
                 $stmt->execute();
             }else{
