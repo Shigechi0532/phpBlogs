@@ -114,8 +114,17 @@
             }
         }
 
+        public function delete(){
+            if($this->article->getId()){
+                $id = $this->article->getId();
+                $stmt = $this->dbh->prepare('SELECT * FROM articles WHERE id=:id AND is_delete=0');
+                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                $stmt->execute();
+            }
+        }
+
         public function find($id){
-            $stmt = $this->dbh->prepare('SELECT * FROM articles WHERE id=:id');
+            $stmt = $this->dbh->prepare('SELECT * FROM articles WHERE is_delete=0 ORDER BY created_at DESC');
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
