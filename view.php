@@ -3,14 +3,15 @@
     include 'lib/queryArticle.php';
     include 'lib/article.php';
 
-    if(!empty($_GET['id'])){
-        $id = intval($_GET['id']);
+    $queryArticle = new QueryArticle();
 
-        $queryArticle = new QueryArticle();
+    if (!empty($_GET['id'])){
+        $id = intval($_GET['id']);
         $article = $queryArticle->find($id);
-    }else{
+    } else {
         $article = null;
     }
+    $monthly = $queryArticle->getMonthlyArchiveMenu();
 ?>
 
 <!DOCTYPE html>
@@ -84,9 +85,9 @@
                 <div class="p-4 mb-3 bg-light-rounded">
                     <h4>アーカイブ</h4>
                     <ol class="list-unstyled mb-0">
-                        <li><a href="#">2023/12</a></li>
-                        <li><a href="#">2023/11</a></li>
-                        <li><a href="#">2023/10</a></li>
+                        <?php foreach($monthly as $m): ?>
+                            <li><a href="index.php?month=<?php echo $m['month'] ?>"><?php echo $m['month'] ?> (<?php echo $m['count'] ?>)</a></li>
+                        <?php endforeach ?>
                     </ol>
                 </div>
             </div>
