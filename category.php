@@ -83,6 +83,7 @@
                         <tr>
                             <td><?php echo $c->getId() ?></td>
                             <td><?php echo $c->getName() ?></td>
+                            <td><a href="category.php?action=edit&id=<?php echo $c->getId() ?>" class="btn btn-success">編集</a></td>
                         </tr>
                         <?php endforeach ?>
                     </tbody>
