@@ -5,10 +5,20 @@
 
     $queryCategory = new QueryCategory();
 
+    $formCategory = null; //編集するカテゴリ情報
+
     if(!empty($_POST['action']) && $_POST['action'] == 'add' && !empty($_POST['name'])){
         $category = new Category();
         $category->setName($_POST['name']);
         $category->save();
+    }else if(!empty($_POST['action']) && $_POST['action'] == 'edit' && !empty($_POST['id'])){
+        $formCategory = $queryCategory->find($_GET['id']);
+    }else if(!empty($_POST['action']) && $_POST['action'] == 'edit' && !empty($_POST['id']) && !empty($_POST['name'])){
+        $category = $queryCategory->find($_POST['id']);
+        if($category){
+            $category->setName($_POST['name']);
+            $category->save();
+        }
     }
 
     $categories = $queryCategory->findAll();
@@ -57,6 +67,22 @@
         <div class="row">
             <div class="col-md-12">
                 <h1>カテゴリー</h1>
+
+                <?php if($formCategory): ?>
+                    <h2>編集</h2>
+                    <form action="category.php" method="post" class="row">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="id" value="<?php echo $formCategory->getId() ?>">
+                        <div class="col-md-6">
+                            <input type="text" name="name" value="<?php echo $formCategory->getName() ?>" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">編集する</button>
+                        </div>
+                    </form>
+
+                    <hr>
+                <?php endif ?>
 
                 <h2>新規追加</h2>
                 <form action="category.php" method="post" class="row">
