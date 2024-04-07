@@ -3,6 +3,7 @@
     include 'lib/connect.php';
     include 'lib/queryArticle.php';
     include 'lib/article.php';
+    include 'lib/queryCategory.php';
 
     $limit = 10;
     $page = 1;
@@ -14,6 +15,9 @@
 
     $queryArticle = new QueryArticle();
     $articles = $queryArticle->getPager($page,$limit);
+
+    $queryCategory = new QueryCategory();
+    $categories = $queryCategory->findAll();
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +70,7 @@
                                 <th>タイトル</th>
                                 <th>本文</th>
                                 <th>画像</th>
+                                <th>カテゴリー</th>
                                 <th>作成日</th>
                                 <th>更新日</th>
                                 <th>編集</th>
@@ -79,6 +84,7 @@
                                     <td><?php echo $article->getTitle() ?></td>
                                     <td><?php echo $article->getBody() ?></td>
                                     <td><?php echo $article->getFilename()? '<img scr="./album/thumbs-'.$article->getfilename().'">' : 'なし' ?></td>
+                                    <td><?php echo isset($categories[$article->getCategoryId()])? $categories[$article->getCategoryId()]->getName(): 'なし' ?></td>
                                     <td><?php echo $article->getCreatedAt() ?></td>
                                     <td><?php echo $article->getUpdatedAt() ?></td>
                                     <td><a href="edit.php?id=<?php echo $article->getId() ?>" class="btn btn-success">編集</a></td>

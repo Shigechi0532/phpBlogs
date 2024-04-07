@@ -3,11 +3,15 @@
     include 'lib/connect.php';
     include 'lib/article.php';
     include 'lib/queryArticle.php';
+    include 'lib/queryCategory.php';
 
     $title = ""; //タイトル
     $body = ""; //本文
     $title_alert = ""; //タイトルのエラー文
     $body_alert = ""; //本文のエラー文
+
+    $queryCategory = new QueryCategory();
+    $categories = $queryCategory->findAll();
 
     if(!empty($_POST['title']) && !empty($_POST['body']))
     {
@@ -21,6 +25,13 @@
 
         if(isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])){
             $article->setFile($_FILES['image']);
+        }
+
+        if (!empty($_POST['category'])){
+            $category = $queryCategory->find($_POST['category']);
+            if ($category){
+                $article->setCategoryId($category->getId());
+            }
         }
 
         $article->save();
@@ -95,6 +106,15 @@
                         <label class="form-label">本文</label>
                         <?php echo !empty($body_alert)? '<div class="alert alert-danger">' .$body_alert.'</div>' : "" ?>
                         <textarea name="body" class="form-control" rows="10"><?php echo $body; ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">カテゴリー</label>
+                        <select name="category" class="form-control">
+                            <option value="0">なし</option>
+                            <?php foreach ($categories as $c): ?>
+                                <option value="<?php echo $c->getId() ?>"><?php echo $c->getName() ?></option>
+                            <?php endforeach ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">画像</label>
